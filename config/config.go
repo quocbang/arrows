@@ -37,7 +37,7 @@ type PostGesConfig struct {
 	Name     string `yaml:"name"`
 	Address  string `yaml:"address"`
 	Port     int    `yaml:"port"`
-	UserName string `yaml:"userName"`
+	UserName string `yaml:"username"`
 	Password string `yaml:"password"`
 }
 
@@ -48,7 +48,7 @@ type CloudConfig struct {
 	Name     string `yaml:"name"`
 	Address  string `yaml:"address"`
 	Port     int    `yaml:"port"`
-	UserName string `yaml:"userName"`
+	UserName string `yaml:"username"`
 	Password string `yaml:"password"`
 }
 

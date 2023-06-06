@@ -1,19 +1,26 @@
 package main
 
 import (
-	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
 	"github.com/go-openapi/swag"
 	"github.com/jessevdk/go-flags"
+	"gopkg.in/yaml.v3"
 
 	"github.com/quocbang/arrows/config"
 )
 
 func main() {
 	flags := parseFlag()
-	fmt.Println(flags)
+
+	config, err := loadConfig(flags.Options.Config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(flags)
+	log.Println(*config.PostGres)
 }
 
 type FlagConfig struct {
@@ -21,9 +28,22 @@ type FlagConfig struct {
 	TLSOptions config.TLSOptionsType
 }
 
+func loadConfig(configPath string) (*config.Config, error) {
+	conf := config.Config{}
+	data, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		return &config.Config{}, err
+	}
+
+	if err := yaml.Unmarshal(data, &conf); err != nil {
+		return &config.Config{}, err
+	}
+
+	return &conf, nil
+}
+
 func parseFlag() *FlagConfig {
 	var conf FlagConfig
-
 	// set variable.
 	configurations := []swag.CommandLineOptionsGroup{
 		{
