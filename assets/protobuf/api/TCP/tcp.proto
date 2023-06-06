@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package arrows;
+option go_package="github.com/quocbang/arrows/pkg/protobuf/api/TCP";
+
+import "authentication/user.proto";
+
+service TCPArrows {
+  // Login to access user agant.
+  //
+  // Required:
+  // - UserName
+  // - Password
+  rpc Login(LoginRequest) returns (LoginReply) {
+    // option (google.api.http) = {
+    //   post : "/login"
+    //   body : "*"
+    // };
+  };
+}
+

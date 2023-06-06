@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package arrows;
+option go_package="github.com/quocbang/arrows/pkg/protobuf/api/UDP";
+
+import "authentication/user.proto";
+
+service UDPArrows {  
+}
+

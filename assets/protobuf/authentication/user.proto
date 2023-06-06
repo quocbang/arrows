@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package arrows;
+option go_package="github.com/quocbang/arrows/pkg/protobuf/authentication";
+
+
+message LoginRequest {
+  string UserName = 1;
+  string Password = 2;
+}
+
+message LoginReply {
+  string APIKey = 1;
+}
