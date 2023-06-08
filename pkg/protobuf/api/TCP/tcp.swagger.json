@@ -14,12 +14,52 @@
   "produces": [
     "application/json"
   ],
-  "paths": {},
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Login to access user agant.",
+        "description": "Required:\n- UserName\n- Password",
+        "operationId": "Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/arrowsLoginReply"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/arrowsLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TCPArrows"
+        ]
+      }
+    }
+  },
   "definitions": {
     "arrowsLoginReply": {
       "type": "object",
       "properties": {
         "APIKey": {
+          "type": "string"
+        }
+      }
+    },
+    "arrowsLoginRequest": {
+      "type": "object",
+      "properties": {
+        "UserName": {
+          "type": "string"
+        },
+        "Password": {
           "type": "string"
         }
       }
