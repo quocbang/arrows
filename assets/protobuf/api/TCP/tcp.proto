@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package arrows;
-option go_package="github.com/quocbang/arrows/pkg/protobuf/api/TCP";
+option go_package="github.com/quocbang/arrows/pkg/protobuf/api/tcp";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";

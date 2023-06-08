@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "api/TCP/tcp.proto",
+    "title": "api/tcp/tcp.proto",
     "version": "version not set"
   },
   "schemes": [
