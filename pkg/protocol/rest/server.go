@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net/http"
 
@@ -11,16 +12,15 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/quocbang/arrows/config"
-	arrowsTCP "github.com/quocbang/arrows/pkg/protobuf/api/tcp"
+	api "github.com/quocbang/arrows/pkg/protobuf/api"
 )
 
 type RestServer struct {
-	Host     string
-	Port     int
-	GRPCHost string
-	GRPCPort int
-	TLS      config.TLSOptionsType
-	Config   config.Config
+	Host               string
+	Port               int
+	GRPCServerEndpoint string
+	TLS                config.TLSOptionsType
+	Config             config.Config
 }
 
 func (s *RestServer) gatewayMux() (*runtime.ServeMux, context.CancelFunc, error) {
@@ -36,6 +36,8 @@ func (s *RestServer) gatewayMux() (*runtime.ServeMux, context.CancelFunc, error)
 
 	if s.TLS.UseTLS() {
 		var cred credentials.TransportCredentials
+		cred = credentials.NewTLS(&tls.Config{})
+
 		opts = []grpc.DialOption{
 			grpc.WithTransportCredentials(cred),
 		}
@@ -45,8 +47,8 @@ func (s *RestServer) gatewayMux() (*runtime.ServeMux, context.CancelFunc, error)
 		}
 	}
 
-	// Register MESync handlers
-	if err := arrowsTCP.RegisterTCPArrowsHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", s.GRPCHost, s.GRPCPort), opts); err != nil {
+	// Register arrows handlers
+	if err := api.RegisterAPIHandlerFromEndpoint(ctx, mux, s.GRPCServerEndpoint, opts); err != nil {
 		return nil, cancel, err
 	}
 

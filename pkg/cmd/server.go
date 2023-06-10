@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,8 +14,8 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/quocbang/arrows/config"
 	"github.com/quocbang/arrows/pkg/logger"
-	"github.com/quocbang/arrows/pkg/protocol/tcp/grpc"
-	"github.com/quocbang/arrows/pkg/protocol/tcp/rest"
+	"github.com/quocbang/arrows/pkg/protocol/grpc"
+	"github.com/quocbang/arrows/pkg/protocol/rest"
 )
 
 func RunServer() {
@@ -35,34 +36,12 @@ func RunServer() {
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
 
-	// listen with restful api.
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-
-		rest := rest.RestServer{
-			Host:     flags.Options.Host,
-			Port:     flags.Options.Port,
-			GRPCHost: flags.Options.GRPCHost,
-			GRPCPort: flags.Options.GRPCPort,
-			TLS:      flags.TLSOptions,
-			Config:   *config,
-		}
-
-		if err := rest.Run(); err != nil {
-			zap.L().Error("failed to serve gRPC: ", zap.Error(err))
-		}
-		zap.L().Info("gRPC server stopped")
-	}()
-
 	// listen with grpc api.
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 
 		grpc := grpc.GRPCServer{
-			Host:     flags.Options.Host,
-			Port:     flags.Options.Port,
 			GRPCHost: flags.Options.GRPCHost,
 			GRPCPort: flags.Options.GRPCPort,
 			TLS:      flags.TLSOptions,
@@ -74,6 +53,26 @@ func RunServer() {
 		}
 		zap.L().Error("gRPC server stopped")
 	}()
+
+	// listen with restful api.
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		rest := rest.RestServer{
+			Host:               flags.Options.Host,
+			Port:               flags.Options.Port,
+			GRPCServerEndpoint: fmt.Sprintf("%s:%d", flags.Options.GRPCHost, flags.Options.GRPCPort),
+			TLS:                flags.TLSOptions,
+			Config:             *config,
+		}
+
+		if err := rest.Run(); err != nil {
+			zap.L().Error("failed to serve gRPC: ", zap.Error(err))
+		}
+		zap.L().Info("gRPC server stopped")
+	}()
+
 }
 
 type FlagConfig struct {

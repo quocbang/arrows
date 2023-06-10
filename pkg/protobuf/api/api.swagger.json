@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "api/tcp/tcp.proto",
+    "title": "api/api.proto",
     "version": "version not set"
   },
   "schemes": [
@@ -39,7 +39,7 @@
           }
         ],
         "tags": [
-          "TCPArrows"
+          "API"
         ]
       }
     }

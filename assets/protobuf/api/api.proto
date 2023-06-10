@@ -1,14 +1,14 @@
 syntax = "proto3";
 
 package arrows;
-option go_package="github.com/quocbang/arrows/pkg/protobuf/api/tcp";
+option go_package="github.com/quocbang/arrows/pkg/protobuf/api";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 import "authentication/user.proto";
 
-service TCPArrows {
+service API {
   // Login to access user agant.
   //
   // Required:

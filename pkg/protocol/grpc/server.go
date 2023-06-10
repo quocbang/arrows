@@ -4,13 +4,12 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"time"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
 	"github.com/quocbang/arrows/config"
-	tcpAPI "github.com/quocbang/arrows/pkg/protobuf/api/tcp"
+	api "github.com/quocbang/arrows/pkg/protobuf/api"
 	"github.com/quocbang/arrows/server"
 )
 
@@ -19,8 +18,6 @@ const (
 )
 
 type GRPCServer struct {
-	Host     string
-	Port     int
 	GRPCHost string
 	GRPCPort int
 	TLS      config.TLSOptionsType
@@ -30,25 +27,22 @@ type GRPCServer struct {
 func (t *GRPCServer) Run() error {
 	defer zap.L().Sync()
 
-	opts := []grpc.ServerOption{
-		grpc.ConnectionTimeout(time.Minute * 2),
-	}
+	opts := []grpc.ServerOption{}
 
 	tcpGRPCServer := grpc.NewServer(opts...)
+	activeServer := server.NewServer(server.ServerParams{
+		LocalDataManager: "a",
+		Logger: func(ctx context.Context) *zap.Logger {
+			return &zap.Logger{}
+		},
+	})
 
 	// Register API
-	tcpAPI.RegisterTCPArrowsServer(grpc.NewServer(opts...),
-		server.NewServer(server.ServerParams{
-			LocalDataManager: "a",
-			Logger: func(ctx context.Context) *zap.Logger {
-				return &zap.Logger{}
-			},
-		}))
+	api.RegisterAPIServer(tcpGRPCServer, activeServer)
 
 	address := fmt.Sprintf("%s:%d", t.GRPCHost, t.GRPCPort)
 	lis, err := net.Listen("tcp", address)
 	if err != nil {
-		zap.L().Error("failed to listen: %v", zap.Error(err))
 		return err
 	}
 	zap.L().Info("serving gRPC server..", zap.String("address", address))

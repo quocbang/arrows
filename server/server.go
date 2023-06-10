@@ -3,8 +3,6 @@ package server
 import (
 	"context"
 
-	"github.com/quocbang/arrows/pkg/protobuf/authentication"
-	"github.com/rs/xid"
 	"go.uber.org/zap"
 )
 
@@ -18,15 +16,9 @@ type ServerParams struct {
 	Logger           func(context.Context) *zap.Logger
 }
 
-func NewServer(params ServerParams) *Server {
-	return &Server{
+func NewServer(params ServerParams) Server {
+	return Server{
 		dm:        params.LocalDataManager,
 		getLogger: params.Logger,
 	}
-}
-
-func (s *Server) Login(context.Context, *authentication.LoginRequest) (*authentication.LoginReply, error) {
-	return &authentication.LoginReply{
-		APIKey: xid.New().String(),
-	}, nil
 }
